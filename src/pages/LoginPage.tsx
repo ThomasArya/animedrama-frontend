@@ -54,28 +54,6 @@ export const LoginPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Demo Credentials Tip */}
-        <div className="p-3 bg-brand-950/40 border border-brand-800/40 rounded-xl text-xs text-brand-300 space-y-1">
-          <p className="font-semibold text-white">Akun Demo Siap Pakai:</p>
-          <div className="flex justify-between">
-            <span>
-              Admin:{" "}
-              <strong className="text-white">admin@animedrama.com</strong>
-            </span>
-            <span>
-              Pass: <strong className="text-white">admin123</strong>
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span>
-              User: <strong className="text-white">user@animedrama.com</strong>
-            </span>
-            <span>
-              Pass: <strong className="text-white">user123</strong>
-            </span>
-          </div>
-        </div>
-
         {/* Error Alert */}
         {error && (
           <div className="p-3 bg-red-950/50 border border-red-800/60 rounded-xl text-xs text-red-300 flex items-center space-x-2">
