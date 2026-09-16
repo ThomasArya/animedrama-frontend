@@ -7,10 +7,17 @@ import {
   Tv,
   AlertCircle,
   Play,
+  RefreshCw,
+  MonitorPlay,
 } from "lucide-react";
 import { Episode, Movie } from "../types/index.js";
 import { episodesApi, historyApi } from "../services/api.js";
 import { useAuth } from "../context/AuthContext.js";
+import {
+  getStreamingServers,
+  isEmbedUrl,
+  VideoServer,
+} from "../services/streaming.service.js";
 
 export const WatchPage: React.FC = () => {
   const { episodeId } = useParams<{ episodeId: string }>();
@@ -25,6 +32,7 @@ export const WatchPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [savedTime, setSavedTime] = useState<number>(0);
   const [initialSeekDone, setInitialSeekDone] = useState<boolean>(false);
+  const [selectedServer, setSelectedServer] = useState<string | null>(null);
 
   // Load episode data
   useEffect(() => {
@@ -34,6 +42,7 @@ export const WatchPage: React.FC = () => {
       setLoading(true);
       setError(null);
       setInitialSeekDone(false);
+      setSelectedServer(null);
 
       try {
         const res = await episodesApi.getById(episodeId);
@@ -168,6 +177,16 @@ export const WatchPage: React.FC = () => {
       ? allEpisodes[currentIndex + 1]
       : null;
 
+  const movie = episode.movie;
+  const isTmdbMovie = !!(movie?.tmdbId);
+  const servers: VideoServer[] = isTmdbMovie
+    ? getStreamingServers(movie.tmdbId!, movie.isTv ?? false, 1, episode.episodeNumber)
+    : [];
+  const activeServer =
+    servers.find((s) => s.id === selectedServer) || servers[0];
+  const isEmbed = isTmdbMovie ? true : isEmbedUrl(episode.videoUrl);
+  const playerSrc = isEmbed && activeServer ? activeServer.url : episode.videoUrl;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       {/* Top Bar with back to detail */}
@@ -189,30 +208,84 @@ export const WatchPage: React.FC = () => {
         {/* Left 3 cols: Video & Controls */}
         <div className="lg:col-span-3 space-y-4">
           <div className="relative aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-dark-800">
-            <video
-              ref={videoRef}
-              src={episode.videoUrl}
-              controls
-              autoPlay
-              playsInline
-              onLoadedMetadata={handleLoadedMetadata}
-              onTimeUpdate={handleTimeUpdate}
-              onPause={handlePause}
-              onEnded={handleEnded}
-              className="w-full h-full object-contain"
-            >
-              {episode.subtitleUrl && (
-                <track
-                  label="Indonesia"
-                  kind="subtitles"
-                  srcLang="id"
-                  src={episode.subtitleUrl}
-                  default
-                />
-              )}
-              Browser Anda tidak mendukung pemutar video HTML5.
-            </video>
+            {isEmbed ? (
+              <iframe
+                key={`${activeServer?.id || "embed"}-${playerSrc}`}
+                src={playerSrc}
+                title={`${movie?.title} - Episode ${episode.episodeNumber}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            ) : (
+              <video
+                ref={videoRef}
+                src={playerSrc}
+                controls
+                autoPlay
+                playsInline
+                onLoadedMetadata={handleLoadedMetadata}
+                onTimeUpdate={handleTimeUpdate}
+                onPause={handlePause}
+                onEnded={handleEnded}
+                className="w-full h-full object-contain"
+              >
+                {episode.subtitleUrl && (
+                  <track
+                    label="Indonesia"
+                    kind="subtitles"
+                    srcLang="id"
+                    src={episode.subtitleUrl}
+                    default
+                  />
+                )}
+                Browser Anda tidak mendukung pemutar video HTML5.
+              </video>
+            )}
           </div>
+
+          {/* Server Selector for TMDB embed streams */}
+          {servers.length > 0 && (
+            <div className="bg-dark-900 border border-dark-800 rounded-xl p-3">
+              <div className="flex items-center gap-2 text-xs font-semibold text-gray-300 mb-2">
+                <MonitorPlay className="w-4 h-4 text-brand-400" />
+                <span>Pilih Server Streaming</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {servers.map((server) => {
+                  const active = activeServer?.id === server.id;
+                  return (
+                    <button
+                      key={server.id}
+                      type="button"
+                      onClick={() => setSelectedServer(server.id)}
+                      aria-pressed={active}
+                      className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                        active
+                          ? "border-brand-500/60 bg-brand-600/20 text-brand-300"
+                          : "border-dark-700 bg-dark-850 text-gray-300 hover:border-dark-600 hover:text-white"
+                      }`}
+                    >
+                      <MonitorPlay className="w-3.5 h-3.5" />
+                      {server.name}
+                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-gray-300">
+                        {server.quality}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {isEmbed && activeServer && (
+                <div className="mt-2 flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 text-gray-500" />
+                  <span className="text-[11px] text-gray-500">
+                    Jika video tidak muncul, coba ganti server atau muat ulang
+                    (klik F5).
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Navigation Controls: Prev & Next */}
           <div className="flex items-center justify-between bg-dark-900 border border-dark-800 rounded-xl p-3">

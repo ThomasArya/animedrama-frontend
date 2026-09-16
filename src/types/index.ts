@@ -33,6 +33,8 @@ export interface Episode {
 
 export interface Movie {
   id: string;
+  tmdbId?: number | null;
+  isTv?: boolean;
   title: string;
   alternativeTitle?: string | null;
   description: string;
