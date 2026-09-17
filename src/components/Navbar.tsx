@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Search,
   Bookmark,
@@ -10,12 +10,12 @@ import {
   Menu,
   X,
   PlaySquare,
-} from 'lucide-react';
-import { useAuth } from '../context/AuthContext.js';
+} from "lucide-react";
+import { useAuth } from "../context/AuthContext.js";
 
 export const Navbar: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -30,8 +30,8 @@ export const Navbar: React.FC = () => {
   };
 
   const isActive = (path: string) => {
-    if (path === '/' && location.pathname === '/') return true;
-    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    if (path === "/" && location.pathname === "/") return true;
+    if (path !== "/" && location.pathname.startsWith(path)) return true;
     return false;
   };
 
@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
                 <PlaySquare className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-gray-100 to-brand-300 bg-clip-text text-transparent">
-                Anime<span className="text-brand-400">Drama</span>
+                Thomas<span className="text-brand-400">MOVIE</span>
               </span>
             </Link>
 
@@ -55,9 +55,9 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/') && !location.search
-                    ? 'text-white bg-dark-800'
-                    : 'text-gray-300 hover:text-white hover:bg-dark-850'
+                  isActive("/") && !location.search
+                    ? "text-white bg-dark-800"
+                    : "text-gray-300 hover:text-white hover:bg-dark-850"
                 }`}
               >
                 Beranda
@@ -65,9 +65,9 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/catalog?type=anime"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  location.search.includes('type=anime')
-                    ? 'text-white bg-dark-800'
-                    : 'text-gray-300 hover:text-white hover:bg-dark-850'
+                  location.search.includes("type=anime")
+                    ? "text-white bg-dark-800"
+                    : "text-gray-300 hover:text-white hover:bg-dark-850"
                 }`}
               >
                 Anime
@@ -75,9 +75,9 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/catalog?type=drama"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  location.search.includes('type=drama')
-                    ? 'text-white bg-dark-800'
-                    : 'text-gray-300 hover:text-white hover:bg-dark-850'
+                  location.search.includes("type=drama")
+                    ? "text-white bg-dark-800"
+                    : "text-gray-300 hover:text-white hover:bg-dark-850"
                 }`}
               >
                 Drama
@@ -85,9 +85,9 @@ export const Navbar: React.FC = () => {
               <Link
                 to="/catalog"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  location.pathname === '/catalog' && !location.search
-                    ? 'text-white bg-dark-800'
-                    : 'text-gray-300 hover:text-white hover:bg-dark-850'
+                  location.pathname === "/catalog" && !location.search
+                    ? "text-white bg-dark-800"
+                    : "text-gray-300 hover:text-white hover:bg-dark-850"
                 }`}
               >
                 Jelajah
@@ -159,8 +159,12 @@ export const Navbar: React.FC = () => {
                       onClick={() => setUserDropdownOpen(false)}
                     >
                       <div className="px-4 py-2 border-b border-dark-800">
-                        <p className="text-sm font-semibold text-white truncate">{user?.username}</p>
-                        <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                        <p className="text-sm font-semibold text-white truncate">
+                          {user?.username}
+                        </p>
+                        <p className="text-xs text-gray-400 truncate">
+                          {user?.email}
+                        </p>
                       </div>
                       <Link
                         to="/profile"
@@ -213,7 +217,11 @@ export const Navbar: React.FC = () => {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-gray-300 hover:text-white focus:outline-none"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -276,7 +284,9 @@ export const Navbar: React.FC = () => {
                       className="w-8 h-8 rounded-full border border-dark-700"
                     />
                     <div>
-                      <p className="text-sm font-semibold text-white">{user?.username}</p>
+                      <p className="text-sm font-semibold text-white">
+                        {user?.username}
+                      </p>
                       <p className="text-xs text-gray-400">{user?.email}</p>
                     </div>
                   </div>
@@ -331,4 +341,3 @@ export const Navbar: React.FC = () => {
     </header>
   );
 };
-
