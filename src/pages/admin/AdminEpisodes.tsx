@@ -10,6 +10,11 @@ import {
 } from "lucide-react";
 import { Movie, Episode } from "../../types/index.js";
 import { moviesApi, episodesApi } from "../../services/api.js";
+import {
+  normalizeVideoUrl,
+  isEmbedUrl,
+  isFullPageUrl,
+} from "../../services/streaming.service.js";
 
 export const AdminEpisodes: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -101,14 +106,14 @@ export const AdminEpisodes: React.FC = () => {
         await episodesApi.update(editingEpisode.id, {
           episodeNumber: formData.episodeNumber,
           title: formData.title,
-          videoUrl: formData.videoUrl,
+          videoUrl: normalizeVideoUrl(formData.videoUrl),
           subtitleUrl: formData.subtitleUrl || null,
         });
       } else {
         await episodesApi.create(selectedMovieId, {
           episodeNumber: formData.episodeNumber,
           title: formData.title,
-          videoUrl: formData.videoUrl,
+          videoUrl: normalizeVideoUrl(formData.videoUrl),
           subtitleUrl: formData.subtitleUrl || null,
         });
       }
@@ -131,6 +136,10 @@ export const AdminEpisodes: React.FC = () => {
       alert("Gagal menghapus episode.");
     }
   };
+
+  const normalizedVideo = normalizeVideoUrl(formData.videoUrl);
+  const videoIsEmbed = normalizedVideo ? isEmbedUrl(normalizedVideo) : false;
+  const videoIsFullPage = normalizedVideo ? isFullPageUrl(normalizedVideo) : false;
 
   return (
     <div className="space-y-6">
@@ -335,9 +344,65 @@ export const AdminEpisodes: React.FC = () => {
                   className="w-full px-3 py-2 bg-dark-800 border border-dark-700 rounded-xl text-white focus:outline-none focus:border-brand-500 text-xs"
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
-                  Harus link direct video legal (MP4 / WebM / HLS stream).
+                  Tempel link video langsung (mp4/webm/m3u8) atau link embed
+                  resmi. Link YouTube otomatis diubah ke mode embed.
                 </p>
               </div>
+
+              {/* Live Preview */}
+              {(normalizedVideo || videoIsFullPage) && (
+                <div>
+                  <label className="block text-gray-300 font-semibold mb-1">
+                    Pratinjau Tampilan di Website
+                  </label>
+                  <div className="relative aspect-video bg-black rounded-xl overflow-hidden border border-dark-700">
+                    {normalizedVideo ? (
+                      videoIsEmbed ? (
+                        <iframe
+                          src={normalizedVideo}
+                          title="Pratinjau video"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                          className="w-full h-full border-0"
+                        />
+                      ) : (
+                        <video
+                          src={normalizedVideo}
+                          controls
+                          preload="metadata"
+                          className="w-full h-full object-contain"
+                        />
+                      )
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[11px] text-gray-500">
+                        Masukkan URL untuk melihat pratinjau...
+                      </div>
+                    )}
+                  </div>
+                  {videoIsFullPage && (
+                    <div className="mt-2 flex items-start space-x-2 p-3 bg-amber-950/50 border border-amber-800/60 rounded-xl text-[11px] text-amber-300">
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>
+                        ⚠️ Ini URL halaman penuh situs lain &nbsp;—&nbsp; jika
+                        tetap dipakai, seluruh halaman (plus daftar episode
+                        situs itu) akan ikut tampil di website kamu. Gunakan
+                        link video langsung atau link embed resmi situs
+                        tersebut.
+                      </span>
+                    </div>
+                  )}
+                  {!videoIsFullPage && normalizedVideo && (
+                    <div className="mt-2 flex items-start space-x-2 p-3 bg-emerald-950/50 border border-emerald-800/60 rounded-xl text-[11px] text-emerald-300">
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>
+                        {videoIsEmbed
+                          ? "✓ URL ini akan tampil sebagai video embed di dalam halaman kamu."
+                          : "✓ URL ini video langsung dan akan diputar di player native website kamu."}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="block text-gray-300 font-semibold mb-1">

@@ -92,20 +92,70 @@ export function isEmbedUrl(url: string): boolean {
     lower.endsWith(".mp4") ||
     lower.endsWith(".webm") ||
     lower.endsWith(".ogg") ||
-    lower.endsWith(".m3u8")
+    lower.endsWith(".m3u8") ||
+    lower.endsWith(".m4v") ||
+    lower.endsWith(".ogv")
   ) {
     return false;
   }
   return (
-    lower.includes("vidlink.pro") ||
-    lower.includes("vidsrc") ||
-    lower.includes("multiembed.mov") ||
-    lower.includes("autoembed") ||
-    lower.includes("2embed") ||
     lower.includes("youtube.com/embed") ||
+    lower.includes("player.vimeo.com") ||
+    lower.includes("drive.google.com") ||
     lower.includes("embed") ||
     lower.startsWith("http")
   );
+}
+
+export function normalizeVideoUrl(url: string): string {
+  if (!url) return url;
+  const trimmed = url.trim();
+  const ytWatch = trimmed.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{6,})/,
+  );
+  if (ytWatch) return `https://www.youtube.com/embed/${ytWatch[1]}`;
+  return trimmed;
+}
+
+export function isFullPageUrl(url: string): boolean {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  const directHints = [
+    ".mp4",
+    ".webm",
+    ".m4v",
+    ".ogv",
+    ".ogg",
+    ".m3u8",
+    "youtube.com/embed",
+    "youtu.be/",
+    "youtube.com/shorts",
+    "player.vimeo.com",
+    "/embed",
+    "embed/",
+    "drive.google.com",
+    "vidlink.pro",
+    "vidsrc",
+    "multiembed.mov",
+    "autoembed",
+    "2embed",
+  ];
+  if (directHints.some((h) => lower.includes(h))) return false;
+  const pageHints = [
+    "/drama/",
+    "/series/",
+    "/tv/",
+    "/anime/",
+    "/episode-",
+    "/episode/",
+    "/watch/",
+    "/movie/",
+    "/show/",
+    "?ep=",
+    "/episode",
+    "/play/",
+  ];
+  return pageHints.some((h) => lower.includes(h));
 }
 
 export function getEmbedUrlForEpisode(options: {

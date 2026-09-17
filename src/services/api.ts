@@ -168,6 +168,16 @@ export const historyApi = {
 // =====================
 // ADMIN API
 // =====================
+export const syncApi = {
+  tmdb: (pages?: number) =>
+    api.post<{
+      message: string;
+      created: number;
+      updated: number;
+      total: number;
+    }>("/sync/tmdb", null, { params: { pages: pages ?? 2 } }),
+};
+
 export const adminApi = {
   getStats: () => api.get<{ stats: AdminStats }>("/stats/overview"),
   getUsers: () => api.get<{ users: User[] }>("/users"),

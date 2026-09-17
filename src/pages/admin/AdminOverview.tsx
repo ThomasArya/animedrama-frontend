@@ -8,13 +8,21 @@ import {
   Tags,
   PlusCircle,
   TrendingUp,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 import { AdminStats } from "../../types/index.js";
-import { adminApi } from "../../services/api.js";
+import { adminApi, syncApi } from "../../services/api.js";
 
 export const AdminOverview: React.FC = () => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [syncing, setSyncing] = useState<boolean>(false);
+  const [syncResult, setSyncResult] = useState<{
+    ok: boolean;
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     adminApi
@@ -23,6 +31,30 @@ export const AdminOverview: React.FC = () => {
       .catch((err) => console.error("Failed to load stats:", err))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleSyncTmdb = async () => {
+    setSyncing(true);
+    setSyncResult(null);
+    try {
+      const res = await syncApi.tmdb(2);
+      const r = res.data;
+      setSyncResult({
+        ok: true,
+        message: `${r.message} (${r.created} baru, ${r.updated} diperbarui dari ${r.total})`,
+      });
+      const statsRes = await adminApi.getStats();
+      setStats(statsRes.data.stats);
+    } catch (err: any) {
+      setSyncResult({
+        ok: false,
+        message:
+          err.response?.data?.error ||
+          "Gagal sinkronisasi. Periksa TMDB_API_KEY di backend.",
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -174,7 +206,42 @@ export const AdminOverview: React.FC = () => {
               <p className="text-gray-400">Ubah role admin/user</p>
             </div>
           </Link>
+
+          <button
+            onClick={handleSyncTmdb}
+            disabled={syncing}
+            className="flex items-center space-x-3 p-4 rounded-2xl bg-dark-850 hover:bg-dark-800 border border-dark-750 text-gray-200 hover:text-white transition-colors disabled:opacity-60 text-left"
+          >
+            <RefreshCw
+              className={`w-5 h-5 text-emerald-400 shrink-0 ${
+                syncing ? "animate-spin" : ""
+              }`}
+            />
+            <div className="text-xs">
+              <p className="font-semibold text-white">
+                {syncing ? "Menyinkronkan..." : "Sync Katalog TMDB"}
+              </p>
+              <p className="text-gray-400">Perbarui poster & data dari TMDB</p>
+            </div>
+          </button>
         </div>
+
+        {syncResult && (
+          <div
+            className={`flex items-start space-x-2 p-3 rounded-xl border text-[11px] ${
+              syncResult.ok
+                ? "bg-emerald-950/50 border-emerald-800/60 text-emerald-300"
+                : "bg-red-950/60 border-red-800/60 text-red-300"
+            }`}
+          >
+            {syncResult.ok ? (
+              <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+            ) : (
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            )}
+            <span>{syncResult.message}</span>
+          </div>
+        )}
       </div>
     </div>
   );
