@@ -12,6 +12,7 @@ import { WatchPage } from './pages/WatchPage.js';
 import { LoginPage } from './pages/LoginPage.js';
 import { RegisterPage } from './pages/RegisterPage.js';
 import { ProfilePage } from './pages/ProfilePage.js';
+import { ContactPage } from './pages/ContactPage.js';
 
 // Admin Pages
 import { AdminOverview } from './pages/admin/AdminOverview.js';
@@ -52,6 +53,7 @@ export const App: React.FC = () => {
             <Route path="watch/:episodeId" element={<WatchPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
+            <Route path="contact" element={<ContactPage />} />
             <Route
               path="profile"
               element={

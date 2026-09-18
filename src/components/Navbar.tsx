@@ -93,6 +93,16 @@ export const Navbar: React.FC = () => {
               >
                 Jelajah
               </Link>
+              <Link
+                to="/contact"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  location.pathname === "/contact"
+                    ? "text-white bg-dark-800"
+                    : "text-gray-300 hover:text-white hover:bg-dark-850"
+                }`}
+              >
+                Contact
+              </Link>
             </nav>
           </div>
 
@@ -278,6 +288,13 @@ export const Navbar: React.FC = () => {
                 className="px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-dark-800"
               >
                 Jelajah Katalog
+              </Link>
+              <Link
+                to="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-dark-800"
+              >
+                Contact
               </Link>
             </div>
 

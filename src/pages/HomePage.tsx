@@ -289,7 +289,7 @@ export const HomePage: React.FC = () => {
 
         {/* Trending Now Slider */}
         <MovieSlider
-          title="🔥 Sedang Tren"
+          title="Sedang Tren"
           subtitle="Judul paling banyak ditonton minggu ini"
           movies={trendingMovies}
           viewAllLink="/catalog?sort=popular"
@@ -297,7 +297,7 @@ export const HomePage: React.FC = () => {
 
         {/* Latest Anime Slider */}
         <MovieSlider
-          title="⚡ Anime Terbaru"
+          title="Anime Terbaru"
           subtitle="Episode dan seri anime terkini"
           movies={latestAnime}
           viewAllLink="/catalog?type=anime"
@@ -305,7 +305,7 @@ export const HomePage: React.FC = () => {
 
         {/* Latest Drama Slider */}
         <MovieSlider
-          title="🎭 Drama Pilihan"
+          title="Drama Pilihan"
           subtitle="Serial drama Korea & Asia terpopuler"
           movies={latestDrama}
           viewAllLink="/catalog?type=drama"
@@ -313,7 +313,7 @@ export const HomePage: React.FC = () => {
 
         {/* Popular Content Slider */}
         <MovieSlider
-          title="⭐ Nilai Tertinggi"
+          title="Nilai Tertinggi"
           subtitle="Anime dan drama dengan rating komunitas tertinggi"
           movies={popularMovies}
           viewAllLink="/catalog?sort=popular"
