@@ -5,6 +5,13 @@ export interface User {
   role: "user" | "admin";
   avatar?: string | null;
   createdAt: string;
+  experience?: number;
+  level?: number;
+  currentLevelExperience?: number;
+  nextLevelExperience?: number | null;
+  experienceToNextLevel?: number;
+  progressPercent?: number;
+  watchTimeSeconds?: number;
   _count?: {
     watchlist: number;
     history: number;

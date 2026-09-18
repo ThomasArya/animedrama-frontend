@@ -152,15 +152,20 @@ export const historyApi = {
     duration: number;
     completed?: boolean;
   }) =>
-    api.post<{ message: string; history: WatchHistoryItem }>("/history", data),
-  updateProgress: (
-    episodeId: string,
-    data: { progress: number; duration: number; completed?: boolean },
-  ) =>
-    api.put<{ message: string; history: WatchHistoryItem }>(
-      `/history/${episodeId}`,
-      data,
-    ),
+    api.post<{
+      message: string;
+      history: WatchHistoryItem;
+      progression: Pick<
+        User,
+        | "experience"
+        | "level"
+        | "currentLevelExperience"
+        | "nextLevelExperience"
+        | "experienceToNextLevel"
+        | "progressPercent"
+        | "watchTimeSeconds"
+      >;
+    }>("/history", data),
   delete: (episodeId: string) =>
     api.delete<{ message: string }>(`/history/${episodeId}`),
 };

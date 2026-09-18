@@ -18,11 +18,12 @@ import {
   isEmbedUrl,
   VideoServer,
 } from "../services/streaming.service.js";
+import { HlsVideo } from "../components/HlsVideo.js";
 
 export const WatchPage: React.FC = () => {
   const { episodeId } = useParams<{ episodeId: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, updateUser } = useAuth();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [episode, setEpisode] = useState<(Episode & { movie: Movie }) | null>(
@@ -93,13 +94,16 @@ export const WatchPage: React.FC = () => {
     if (duration <= 0) return;
 
     try {
-      await historyApi.saveProgress({
+      const response = await historyApi.saveProgress({
         movieId: episode.movieId,
         episodeId: episode.id,
         progress: currentTime,
         duration: duration,
         completed: isCompleted,
       });
+      if (user && response.data.progression) {
+        updateUser({ ...user, ...response.data.progression });
+      }
     } catch (e) {
       // Background sync errors shouldn't crash the video
       console.debug("Failed to sync watch progress:", e);
@@ -178,14 +182,20 @@ export const WatchPage: React.FC = () => {
       : null;
 
   const movie = episode.movie;
-  const isTmdbMovie = !!(movie?.tmdbId);
+  const isTmdbMovie = !!movie?.tmdbId;
   const servers: VideoServer[] = isTmdbMovie
-    ? getStreamingServers(movie.tmdbId!, movie.isTv ?? false, 1, episode.episodeNumber)
+    ? getStreamingServers(
+        movie.tmdbId!,
+        movie.isTv ?? false,
+        1,
+        episode.episodeNumber,
+      )
     : [];
   const activeServer =
     servers.find((s) => s.id === selectedServer) || servers[0];
   const isEmbed = isTmdbMovie ? true : isEmbedUrl(episode.videoUrl);
-  const playerSrc = isEmbed && activeServer ? activeServer.url : episode.videoUrl;
+  const playerSrc =
+    isEmbed && activeServer ? activeServer.url : episode.videoUrl;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -218,7 +228,7 @@ export const WatchPage: React.FC = () => {
                 className="w-full h-full border-0"
               />
             ) : (
-              <video
+              <HlsVideo
                 ref={videoRef}
                 src={playerSrc}
                 controls
@@ -240,7 +250,7 @@ export const WatchPage: React.FC = () => {
                   />
                 )}
                 Browser Anda tidak mendukung pemutar video HTML5.
-              </video>
+              </HlsVideo>
             )}
           </div>
 

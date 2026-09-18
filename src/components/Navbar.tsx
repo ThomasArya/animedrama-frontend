@@ -10,6 +10,7 @@ import {
   Menu,
   X,
   PlaySquare,
+  Award,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.js";
 
@@ -136,6 +137,15 @@ export const Navbar: React.FC = () => {
                     <span>Admin</span>
                   </Link>
                 )}
+
+                <Link
+                  to="/profile"
+                  title="Level dan XP saya"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-brand-300 bg-brand-500/10 border border-brand-500/30 rounded-full hover:bg-brand-500/20 transition-colors"
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  <span>Lv. {user?.level ?? 1}</span>
+                </Link>
 
                 {/* User Dropdown */}
                 <div className="relative">
@@ -288,6 +298,9 @@ export const Navbar: React.FC = () => {
                         {user?.username}
                       </p>
                       <p className="text-xs text-gray-400">{user?.email}</p>
+                      <p className="text-xs text-brand-300 mt-1">
+                        Level {user?.level ?? 1} · {user?.experience ?? 0} XP
+                      </p>
                     </div>
                   </div>
                   <Link

@@ -9,6 +9,7 @@ import {
   Play,
   CheckCircle,
   AlertCircle,
+  Award,
 } from "lucide-react";
 import { WatchlistItem, WatchHistoryItem } from "../types/index.js";
 import { watchlistApi, historyApi, authApi } from "../services/api.js";
@@ -176,6 +177,45 @@ export const ProfilePage: React.FC = () => {
               <strong className="text-white font-bold">{history.length}</strong>{" "}
               Riwayat Ditonton
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* User level progression */}
+      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-xl bg-brand-500/15 text-brand-300">
+              <Award className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">Level pengguna</p>
+              <p className="text-xl font-bold text-white">
+                Level {user?.level ?? 1}
+              </p>
+            </div>
+          </div>
+          <div className="text-left sm:text-right">
+            <p className="text-sm font-semibold text-white">
+              {user?.experience ?? 0} XP
+            </p>
+            <p className="text-xs text-gray-400">
+              {user?.watchTimeSeconds
+                ? `${Math.floor(user.watchTimeSeconds / 60)} menit ditonton`
+                : "Mulai menonton untuk mendapatkan XP"}
+            </p>
+          </div>
+        </div>
+        <div className="mt-4">
+          <div className="h-2 rounded-full bg-dark-800 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-brand-500 transition-all"
+              style={{ width: `${user?.progressPercent ?? 0}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-2 text-[11px] text-gray-400">
+            <span>{user?.progressPercent ?? 0}% menuju level berikutnya</span>
+            <span>{user?.experienceToNextLevel ?? 100} XP lagi</span>
           </div>
         </div>
       </div>

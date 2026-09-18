@@ -15,6 +15,7 @@ import {
   isEmbedUrl,
   isFullPageUrl,
 } from "../../services/streaming.service.js";
+import { HlsVideo } from "../../components/HlsVideo.js";
 
 export const AdminEpisodes: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -366,7 +367,7 @@ export const AdminEpisodes: React.FC = () => {
                           className="w-full h-full border-0"
                         />
                       ) : (
-                        <video
+                        <HlsVideo
                           src={normalizedVideo}
                           controls
                           preload="metadata"
